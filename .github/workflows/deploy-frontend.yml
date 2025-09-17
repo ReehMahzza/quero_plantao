@@ -35,15 +35,15 @@ jobs:
           npm run build
         working-directory: ./frontend
 
-      # 4. Faz o deploy para o Firebase Hosting
+      # 4. Faz o deploy para o Firebase Hosting (VERSÃO CORRIGIDA)
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           # Token de acesso do repositório, necessário para a action
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          # O ID do projeto Firebase (encontrado nas configurações do projeto no console do Firebase)
-          # Ex: quero-plantao-a1b2c
+          
+          # O ID do projeto Firebase que você já preencheu
           projectId: 'quero-plantao-793ef'
-        env:
-          # Usa o token que armazenamos nos segredos do GitHub para autenticação
-          FIREBASE_CLI_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
+          
+          # AQUI ESTÁ A MUDANÇA: Usando a Chave de Conta de Serviço que guardamos no cofre
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
