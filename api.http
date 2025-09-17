@@ -1,0 +1,139 @@
+### ===================================================
+###         QUERO PLANTÃO - PAINEL DE TESTES API
+### ===================================================
+
+### VARIÁVEIS DE TESTE
+@instituicaoId       = 6R0t7Fiyd66gTqf1ROeP
+@plantaoId           = FNTPtA19gleHEacj1hov
+@profissionalId_Ana  = vSi6dnMpIlvQbN04kP3n
+@profissionalId_Bruno = glcoeOVIjRa5HwvY5THV
+@profissionalId_Carla = t5KbcDCFvgGJn5RRI0b4
+
+###
+# ================================
+#       RECURSO: PROFISSIONAIS
+# ================================
+###
+
+# @name cadastrarAna
+POST http://localhost:3000/profissionais
+Content-Type: application/json
+
+{
+  "nomeCompleto": "Ana Carolina Souza",
+  "email": "ana.carolina@email.com",
+  "cpf": "111.111.111-11",
+  "especialidade": "Técnica de Enfermagem",
+  "coren": { "numero": "111111", "estado": "SP" }
+}
+
+###
+
+# @name cadastrarBruno
+POST http://localhost:3000/profissionais
+Content-Type: application/json
+
+{
+  "nomeCompleto": "Bruno Oliveira",
+  "email": "bruno.oliveira@email.com",
+  "cpf": "222.222.222-22",
+  "especialidade": "Enfermeiro Chefe",
+  "coren": { "numero": "222222", "estado": "SP" }
+}
+
+###
+
+# @name cadastrarCarla
+POST http://localhost:3000/profissionais
+Content-Type: application/json
+
+{
+  "nomeCompleto": "Carla Martins",
+  "email": "carla.martins@email.com",
+  "cpf": "333.333.333-33",
+  "especialidade": "Enfermeira Pediátrica",
+  "coren": { "numero": "333333", "estado": "RJ" }
+}
+
+###
+# ================================
+#       RECURSO: INSTITUIÇÕES
+# ================================
+###
+
+# @name criarInstituicao
+POST http://localhost:3000/instituicoes
+Content-Type: application/json
+
+{
+  "razaoSocial": "Clínica Bem Cuidar Ltda",
+  "nomeFantasia": "Clínica Bem Cuidar",
+  "cnpj": "55.666.777/0001-88",
+  "emailPrincipal": "contato@bemcuidar.com",
+  "telefoneContato": "11988887777",
+  "endereco": { "cep": "01311-000", "logradouro": "Avenida Brasil", "numero": "1000", "bairro": "Jardins", "cidade": "São Paulo", "estado": "SP" }
+}
+
+###
+# ================================
+#           RECURSO: PLANTÕES
+# ================================
+###
+
+# @name publicarPlantao
+POST http://localhost:3000/plantoes
+Content-Type: application/json
+
+{
+  "instituicaoId": "{{instituicaoId}}",
+  "titulo": "Plantão de Teste para Múltiplas Candidaturas",
+  "descricao": "Plantão de 12 horas para testar o fluxo de aprovação.",
+  "dataInicio": "2025-12-01T07:00:00.000Z",
+  "dataFim": "2025-12-01T19:00:00.000Z",
+  "valorOferecido": 600,
+  "endereco": {
+    "cep": "01311-000",
+    "logradouro": "Avenida de Teste Final",
+    "numero": "456",
+    "bairro": "Consolação",
+    "cidade": "São Paulo",
+    "estado": "SP"
+  }
+}
+
+###
+
+# @name candidatarAna
+POST http://localhost:3000/plantoes/{{plantaoId}}/candidatar-se
+Content-Type: application/json
+
+{ "profissionalId": "{{profissionalId_Ana}}" }
+
+###
+
+# @name candidatarBruno
+POST http://localhost:3000/plantoes/{{plantaoId}}/candidatar-se
+Content-Type: application/json
+
+{ "profissionalId": "{{profissionalId_Bruno}}" }
+
+###
+
+# @name candidatarCarla
+POST http://localhost:3000/plantoes/{{plantaoId}}/candidatar-se
+Content-Type: application/json
+
+{ "profissionalId": "{{profissionalId_Carla}}" }
+
+###
+
+# @name listarCandidaturas
+GET http://localhost:3000/plantoes/{{plantaoId}}/candidaturas
+
+###
+
+# @name aprovarCandidatoAna
+POST http://localhost:3000/plantoes/{{plantaoId}}/aprovar-candidato
+Content-Type: application/json
+
+{ "profissionalId": "{{profissionalId_Ana}}" }
