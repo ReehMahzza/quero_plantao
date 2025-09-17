@@ -4,7 +4,7 @@
 
 ### VARIÁVEIS DE TESTE
 @instituicaoId       = 6R0t7Fiyd66gTqf1ROeP
-@plantaoId           = FNTPtA19gleHEacj1hov
+@plantaoId           = YCoFerGYWlbPC7IWzw5x
 @profissionalId_Ana  = vSi6dnMpIlvQbN04kP3n
 @profissionalId_Bruno = glcoeOVIjRa5HwvY5THV
 @profissionalId_Carla = t5KbcDCFvgGJn5RRI0b4
@@ -16,7 +16,7 @@
 ###
 
 # @name cadastrarAna
-POST http://localhost:3000/profissionais
+POST http://localhost:3000/api/v1/profissionais
 Content-Type: application/json
 
 {
@@ -30,7 +30,7 @@ Content-Type: application/json
 ###
 
 # @name cadastrarBruno
-POST http://localhost:3000/profissionais
+POST http://localhost:3000/api/v1/profissionais
 Content-Type: application/json
 
 {
@@ -44,7 +44,7 @@ Content-Type: application/json
 ###
 
 # @name cadastrarCarla
-POST http://localhost:3000/profissionais
+POST http://localhost:3000/api/v1/profissionais
 Content-Type: application/json
 
 {
@@ -62,7 +62,7 @@ Content-Type: application/json
 ###
 
 # @name criarInstituicao
-POST http://localhost:3000/instituicoes
+POST http://localhost:3000/api/v1/instituicoes
 Content-Type: application/json
 
 {
@@ -81,7 +81,7 @@ Content-Type: application/json
 ###
 
 # @name publicarPlantao
-POST http://localhost:3000/plantoes
+POST http://localhost:3000/api/v1/plantoes
 Content-Type: application/json
 
 {
@@ -104,7 +104,7 @@ Content-Type: application/json
 ###
 
 # @name candidatarAna
-POST http://localhost:3000/plantoes/{{plantaoId}}/candidatar-se
+POST http://localhost:3000/api/v1/plantoes/{{plantaoId}}/candidatar-se
 Content-Type: application/json
 
 { "profissionalId": "{{profissionalId_Ana}}" }
@@ -112,7 +112,7 @@ Content-Type: application/json
 ###
 
 # @name candidatarBruno
-POST http://localhost:3000/plantoes/{{plantaoId}}/candidatar-se
+POST http://localhost:3000/api/v1/plantoes/{{plantaoId}}/candidatar-se
 Content-Type: application/json
 
 { "profissionalId": "{{profissionalId_Bruno}}" }
@@ -120,7 +120,7 @@ Content-Type: application/json
 ###
 
 # @name candidatarCarla
-POST http://localhost:3000/plantoes/{{plantaoId}}/candidatar-se
+POST http://localhost:3000/api/v1/plantoes/{{plantaoId}}/candidatar-se
 Content-Type: application/json
 
 { "profissionalId": "{{profissionalId_Carla}}" }
@@ -128,12 +128,12 @@ Content-Type: application/json
 ###
 
 # @name listarCandidaturas
-GET http://localhost:3000/plantoes/{{plantaoId}}/candidaturas
+GET http://localhost:3000/api/v1/plantoes/{{plantaoId}}/candidaturas
 
 ###
 
 # @name aprovarCandidatoAna
-POST http://localhost:3000/plantoes/{{plantaoId}}/aprovar-candidato
+POST http://localhost:3000/api/v1/plantoes/{{plantaoId}}/aprovar-candidato
 Content-Type: application/json
 
 { "profissionalId": "{{profissionalId_Ana}}" }
