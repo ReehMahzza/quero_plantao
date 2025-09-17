@@ -46,4 +46,4 @@ jobs:
           projectId: 'quero-plantao-793ef'
           
           # AQUI ESTÁ A MUDANÇA: Usando a Chave de Conta de Serviço que guardamos no cofre
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
