@@ -43,5 +43,4 @@ jobs:
           projectId: 'quero-plantao-793ef'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
           entryPoint: ./frontend  # <--- AQUI ESTÁ A CORREÇÃO
-          
-          
+          channelId: live
