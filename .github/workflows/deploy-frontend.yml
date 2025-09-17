@@ -1,0 +1,49 @@
+# .github/workflows/deploy-frontend.yml
+
+# Nome do workflow que aparecerá na aba "Actions" do GitHub
+name: Deploy Frontend to Firebase Hosting
+
+# Gatilho: Este workflow roda automaticamente sempre que houver um push na branch 'main'
+on:
+  push:
+    branches:
+      - main
+
+# Trabalhos: Define uma sequência de tarefas a serem executadas
+jobs:
+  build_and_deploy:
+    # A máquina virtual que será usada para executar os comandos
+    runs-on: ubuntu-latest
+
+    # Passos a serem executados
+    steps:
+      # 1. Baixa o código do repositório para a máquina virtual
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Configura o ambiente Node.js com uma versão LTS específica
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Usando uma versão LTS estável
+
+      # 3. Instala as dependências e constrói o projeto
+      #    O working-directory garante que os comandos rodem dentro da subpasta 'frontend'
+      - name: Install Dependencies and Build Project
+        run: |
+          npm ci
+          npm run build
+        working-directory: ./frontend
+
+      # 4. Faz o deploy para o Firebase Hosting
+      - name: Deploy to Firebase
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          # Token de acesso do repositório, necessário para a action
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          # O ID do projeto Firebase (encontrado nas configurações do projeto no console do Firebase)
+          # Ex: quero-plantao-a1b2c
+          projectId: 'quero-plantao-793ef'
+        env:
+          # Usa o token que armazenamos nos segredos do GitHub para autenticação
+          FIREBASE_CLI_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
