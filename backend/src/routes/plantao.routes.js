@@ -1,18 +1,18 @@
-// src/routes/plantao.routes.js
+// backend/src/routes/plantao.routes.js
 
 const express = require('express');
 const router = express.Router();
 const plantaoController = require('../controllers/plantao.controller');
 
-// Rotas principais de plantões
 router.post('/', plantaoController.create);
-router.get('/', plantaoController.getAllOpen);
+router.get('/', plantaoController.getAll); // ATUALIZADO
 
-// Rotas de candidaturas de um plantão específico
+// ADICIONE ESTAS DUAS LINHAS NOVAS ANTES DAS ROTAS MAIS ESPECÍFICAS
+router.get('/:id', plantaoController.getById); // <-- ROTA PARA BUSCAR UM PLANTÃO
+
+// As rotas com sub-recursos vêm depois
 router.get('/:plantaoId/candidaturas', plantaoController.listCandidaturas);
 router.post('/:plantaoId/candidatar-se', plantaoController.candidatar);
-
-// Rota de gestão de um plantão específico
 router.post('/:plantaoId/aprovar-candidato', plantaoController.aprovar);
 
 module.exports = router;

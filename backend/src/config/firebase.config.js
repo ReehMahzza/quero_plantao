@@ -2,17 +2,12 @@
 
 const admin = require('firebase-admin');
 
-// O caminho para o serviceAccountKey.json foi corrigido aqui.
-// Partindo de /src/config, subimos dois níveis (../../) para chegar na raiz /backend,
-// onde o arquivo serviceAccountKey.json está localizado.
-const serviceAccount = require('../../serviceAccountKey.json');
-
 // Inicializa a conexão com o Firebase.
 // Esta configuração só precisa ser feita uma vez.
+// O SDK irá automaticamente usar as Application Default Credentials (ADC)
+// que você configurou com 'gcloud auth application-default login'.
 if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-  });
+  admin.initializeApp();
 }
 
 // Exporta as instâncias do admin e do db para serem usadas em outros lugares da aplicação.

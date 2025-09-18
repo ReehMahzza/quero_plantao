@@ -35,12 +35,9 @@ const createPlantao = async (instituicaoId, plantaoData) => {
   return docRef.id;
 };
 
-/**
- * Lista todos os plantões com status "open".
- * @returns {Promise<Array>} Um array de plantões disponíveis.
- */
-const getOpenPlantoes = async () => {
-  const snapshot = await db.collection('plantoes').where('status', '==', 'open').get();
+// RENOMEADO E CORRIGIDO: Busca TODOS os plantões.
+const getAllPlantoes = async () => {
+  const snapshot = await db.collection('plantoes').orderBy('dataInicio', 'desc').get(); // Ordena por data
   if (snapshot.empty) {
     return [];
   }
@@ -125,7 +122,6 @@ const aprovarCandidato = async (plantaoId, profissionalId) => {
 
   return db.runTransaction(async (transaction) => {
     // --- ETAPA 1: LEITURA DE TODOS OS DADOS ---
-    // Primeiro, lemos todos os documentos que vamos precisar.
     const plantaoDoc = await transaction.get(plantaoRef);
     const candidaturaDoc = await transaction.get(candidaturaAprovadaRef);
     const todasCandidaturasRef = plantaoRef.collection('candidaturas');
@@ -134,7 +130,6 @@ const aprovarCandidato = async (plantaoId, profissionalId) => {
     );
 
     // --- ETAPA 2: VALIDAÇÕES ---
-    // Agora, validamos as regras de negócio com os dados lidos.
     if (!plantaoDoc.exists) { throw new Error('PLANTÃO_NAO_ENCONTRADO'); }
     if (plantaoDoc.data().status !== 'open') { throw new Error('PLANTAO_NAO_MAIS_ABERTO'); }
 
@@ -142,7 +137,6 @@ const aprovarCandidato = async (plantaoId, profissionalId) => {
     if (candidaturaDoc.data().status !== 'pending') { throw new Error('CANDIDATO_JA_PROCESSADO'); }
 
     // --- ETAPA 3: OPERAÇÕES DE ESCRITA ---
-    // Finalmente, com tudo validado, executamos todas as escritas.
     transaction.update(plantaoRef, {
       status: 'filled',
       profissionalId: profissionalId,
@@ -160,10 +154,20 @@ const aprovarCandidato = async (plantaoId, profissionalId) => {
   });
 };
 
+const getPlantaoById = async (plantaoId) => {
+  const docRef = db.collection('plantoes').doc(plantaoId);
+  const doc = await docRef.get();
+  if (!doc.exists) {
+    return null;
+  }
+  return { id: doc.id, ...doc.data() };
+};
+
 module.exports = {
   createPlantao,
-  getOpenPlantoes,
+  getAllPlantoes,
   createCandidatura,
   getCandidaturas,
   aprovarCandidato,
+  getPlantaoById,
 };
