@@ -37,7 +37,7 @@ function SignupPage() {
     };
 
     try {
-      await axios.post('http://localhost:3000/api/v1/auth/signup/profissional', payload);
+      await axios.post('https://quero-plantao-backend-586732735949.southamerica-east1.run.app/api/v1/auth/signup/profissional', payload);
       toast.success('Registo realizado com sucesso! Faça o login para continuar.');
       navigate('/login');
     } catch (error) {

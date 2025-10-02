@@ -107,8 +107,8 @@ function DetalhePlantaoPage() {
         try {
             // Busca os dados em paralelo para mais performance
             const [plantaoRes, candidaturasRes] = await Promise.all([
-                axios.get(`http://localhost:3000/api/v1/plantoes/${plantaoId}`),
-                axios.get(`http://localhost:3000/api/v1/plantoes/${plantaoId}/candidaturas`)
+                axios.get(`https://quero-plantao-backend-586732735949.southamerica-east1.run.app/api/v1/plantoes/${plantaoId}`),
+                axios.get(`https://quero-plantao-backend-586732735949.southamerica-east1.run.app/api/v1/plantoes/${plantaoId}/candidaturas`)
             ]);
             
             setPlantao(plantaoRes.data);
@@ -132,7 +132,7 @@ function DetalhePlantaoPage() {
     const handleAprovar = async (profissionalId) => {
         setIsApproving(profissionalId); // Inicia o loading para este candidato
         await toast.promise(
-            axios.post(`http://localhost:3000/api/v1/plantoes/${plantaoId}/aprovar-candidato`, {
+            axios.post(`https://quero-plantao-backend-586732735949.southamerica-east1.run.app/api/v1/plantoes/${plantaoId}/aprovar-candidato`, {
                 profissionalId: profissionalId,
             }),
             {

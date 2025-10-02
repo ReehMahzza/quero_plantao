@@ -24,7 +24,7 @@ function Dashboard() {
     const fetchPlantoes = async () => {
       try {
         // Faz a requisição GET para o endpoint do backend.
-        const response = await axios.get('http://localhost:3000/api/v1/plantoes');
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/plantoes`);
 
         // Se a requisição for bem-sucedida, atualiza o estado com os dados recebidos.
         setPlantoes(response.data);
