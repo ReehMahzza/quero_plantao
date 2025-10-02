@@ -1,0 +1,42 @@
+
+# .github/workflows/deploy-backend.yml
+
+name: Deploy Backend to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker southamerica-east1-docker.pkg.dev
+
+      - name: Build and Push Docker Image
+        run: |-
+          docker build -t southamerica-east1-docker.pkg.dev/quero-plantao-793ef/quero-plantao-repo/quero-plantao-backend:${{ github.sha }} ./backend
+          docker push southamerica-east1-docker.pkg.dev/quero-plantao-793ef/quero-plantao-repo/quero-plantao-backend:${{ github.sha }}
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: quero-plantao-backend
+          region: southamerica-east1
+          image: southamerica-east1-docker.pkg.dev/quero-plantao-793ef/quero-plantao-repo/quero-plantao-backend:${{ github.sha }}
+          platform: managed
