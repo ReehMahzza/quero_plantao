@@ -39,4 +39,3 @@ jobs:
           service: quero-plantao-backend
           region: southamerica-east1
           image: southamerica-east1-docker.pkg.dev/quero-plantao-793ef/quero-plantao-repo/quero-plantao-backend:${{ github.sha }}
-          platform: managed
