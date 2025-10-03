@@ -2,22 +2,25 @@
 
 // --- 1. Importação das Ferramentas ---
 const express = require('express');
-const cors = require('cors'); // <-- NOVO: Importamos o middleware CORS
-const mainRouter = require('./src/routes'); // Importa o roteador principal
-require('./src/config/firebase.config'); // Inicializa a conexão com o Firebase
+const cors = require('cors');
+const mainRouter = require('./src/routes');
+require('./src/config/firebase.config');
 
 // --- 2. Criação do Servidor ---
 const app = express();
 const port = process.env.PORT || 3000;
 
 // --- 3. Configuração de Middlewares ---
-app.use(express.json()); // Habilita o servidor para entender requisições com corpo em JSON
+app.use(express.json());
 
-// <-- NOVO: Habilita o CORS para a aplicação frontend -->
-// Esta linha deve vir ANTES da definição das suas rotas.
-// Configuramos para aceitar requisições apenas do nosso frontend na web.
+// --- CORREÇÃO APLICADA AQUI ---
+// Adicionamos a nova porta do frontend (5174) à lista de origens permitidas.
 const corsOptions = {
-  origin: ['https://quero-plantao-793ef.web.app', 'http://localhost:5173'],
+  origin: [
+    'https://quero-plantao-793ef.web.app', // URL de produção
+    'http://localhost:5173',               // URL de desenvolvimento padrão
+    'http://localhost:5174'                // URL de desenvolvimento alternativa (a sua atual)
+  ],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   allowedHeaders: 'Content-Type,Authorization',
   optionsSuccessStatus: 200
@@ -25,15 +28,15 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // --- 4. Montagem das Rotas ---
-// Rota raiz para health check ou boas-vindas
+// Rota raiz com branding atualizado
 app.get('/', (req, res) => {
-  res.send('API Quero Plantão no ar!');
+  res.send('API Conecta Care no ar!');
 });
 
-// Todas as rotas definidas no roteador principal serão prefixadas com /api/v1
 app.use('/api/v1', mainRouter);
 
 // --- 5. Iniciando o Servidor ---
 app.listen(port, () => {
-  console.log(`Servidor "Quero Plantão" (Fase 2) rodando na porta ${port}!`);
+  // Mensagem de log com branding atualizado
+  console.log(`Servidor "Conecta Care" rodando na porta ${port}!`);
 });

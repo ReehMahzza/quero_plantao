@@ -1,47 +1,39 @@
-// backend/src/controllers/auth.controller.js
-
-const { admin, db } = require('../config/firebase.config');
+const { admin } = require('../config/firebase.config');
+const profissionalService = require('../services/profissional.service');
 
 /**
- * Regista um novo profissional.
+ * REATORIZADO: Regista um novo profissional com o fluxo de "Cadastro Mínimo".
  * 1. Cria o utilizador no Firebase Authentication.
- * 2. Cria o documento do perfil no Firestore com o mesmo UID.
+ * 2. Chama o serviço para criar o documento de perfil mínimo no Firestore.
  */
 const signupProfissional = async (req, res) => {
   try {
-    const { email, password, nomeCompleto, cpf, coren } = req.body;
+    // 1. Extrai apenas os dados mínimos necessários do corpo da requisição.
+    const { email, password, nomeCompleto, cpf } = req.body;
 
-    // Passo 1: Criar o utilizador no Firebase Authentication
+    // 2. Cria o utilizador no Firebase Authentication.
     const userRecord = await admin.auth().createUser({
-      email: email,
-      password: password,
+      email,
+      password,
       displayName: nomeCompleto,
     });
 
-    const { uid } = userRecord;
-
-    // Passo 2: Criar o documento do perfil na coleção 'profissionais' do Firestore
-    // Usamos o UID da autenticação como ID do documento para manter a ligação.
-    const profissionalDocRef = db.collection('profissionais').doc(uid);
-    
-    await profissionalDocRef.set({
+    // 3. Prepara o payload para o serviço, combinando o UID com os dados da requisição.
+    const servicePayload = {
+      uid: userRecord.uid,
       nomeCompleto,
       email,
-      cpf, // Lembre-se que em produção isto deve ser encriptado
-      coren: {
-        numero: coren.numero,
-        estado: coren.estado,
-      },
-      statusGeral: 'pending_validation', // Um status inicial para novos registos
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+      cpf,
+    };
 
-    res.status(201).send({ uid, message: 'Profissional registado com sucesso!' });
+    // 4. Chama o serviço para criar o documento de perfil no Firestore.
+    await profissionalService.createProfissional(servicePayload);
+
+    // 5. Envia a resposta de sucesso.
+    res.status(201).send({ uid: userRecord.uid, message: 'Profissional registado com sucesso!' });
 
   } catch (error) {
     console.error("Erro no registo do profissional: ", error);
-    // Códigos de erro comuns do Firebase Auth: auth/email-already-exists
     if (error.code === 'auth/email-already-exists') {
       return res.status(409).send({ message: 'Este e-mail já está em uso.' });
     }
