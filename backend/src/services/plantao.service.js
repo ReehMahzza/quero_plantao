@@ -87,69 +87,90 @@ const createCandidatura = async (plantaoId, profissionalId) => {
 };
 
 /**
- * Lista todas as candidaturas de um plantão.
+ * NOVO: Busca um plantão e retorna os dados completos dos seus candidatos.
  * @param {string} plantaoId - O ID do plantão.
- * @returns {Promise<Array>} Um array com as candidaturas.
+ * @returns {Promise<Array>} Uma lista de objetos com os dados dos profissionais candidatos.
  */
-const getCandidaturas = async (plantaoId) => {
+const listarCandidatosPorPlantao = async (plantaoId) => {
   const plantaoRef = db.collection('plantoes').doc(plantaoId);
   const plantaoDoc = await plantaoRef.get();
-  if (!plantaoDoc.exists) {
-    throw new Error('PLANTÃO_NAO_ENCONTRADO');
+
+  if (!plantaoDoc.exists || !plantaoDoc.data().candidaturas?.length) {
+    return []; // Retorna vazio se o plantão não existe ou não tem candidatos
   }
 
-  const candidaturasSnapshot = await plantaoRef.collection('candidaturas').get();
-  if (candidaturasSnapshot.empty) {
-    return [];
-  }
+  const candidaturas = plantaoDoc.data().candidaturas;
+  const idsProfissionais = candidaturas.map(c => c.idProfissional);
 
-  const candidaturas = [];
-  candidaturasSnapshot.forEach(doc => {
-    candidaturas.push({ id: doc.id, ...doc.data() });
+  // Busca todos os documentos dos profissionais de uma vez
+  const profissionaisRefs = idsProfissionais.map(id => db.collection('profissionais').doc(id));
+  const profissionaisDocs = await db.getAll(...profissionaisRefs);
+
+  const profissionaisMap = new Map();
+  profissionaisDocs.forEach(doc => {
+    if (doc.exists) {
+      profissionaisMap.set(doc.id, doc.data());
+    }
   });
-  return candidaturas;
+
+  // Combina os dados do perfil com o status da candidatura
+  const candidatosComDados = candidaturas.map(cand => ({
+    ...profissionaisMap.get(cand.idProfissional), // Dados do perfil
+    idProfissional: cand.idProfissional,
+    statusCandidatura: cand.status,
+  }));
+
+  return candidatosComDados;
 };
 
 /**
- * Aprova um candidato e atualiza o status do plantão e das outras candidaturas.
- * @param {string} plantaoId - O ID do plantão.
- * @param {string} profissionalId - O ID do profissional a ser aprovado.
- * @returns {Promise<void>}
+ * NOVO: Aprova um candidato, alocando-o ao plantão e atualizando os status.
+ * Executa como uma transação para garantir a atomicidade.
+ * @param {object} params - Parâmetros da operação.
+ * @param {string} params.plantaoId - ID do plantão.
+ * @param {string} params.idProfissionalAprovado - ID do profissional a ser aprovado.
+ * @param {string} params.idInstituicao - ID da instituição (para autorização).
  */
-const aprovarCandidato = async (plantaoId, profissionalId) => {
+const aprovarCandidato = async ({ plantaoId, idProfissionalAprovado, idInstituicao }) => {
   const plantaoRef = db.collection('plantoes').doc(plantaoId);
-  const candidaturaAprovadaRef = plantaoRef.collection('candidaturas').doc(profissionalId);
 
-  return db.runTransaction(async (transaction) => {
-    // --- ETAPA 1: LEITURA DE TODOS OS DADOS ---
+  await db.runTransaction(async (transaction) => {
     const plantaoDoc = await transaction.get(plantaoRef);
-    const candidaturaDoc = await transaction.get(candidaturaAprovadaRef);
-    const todasCandidaturasRef = plantaoRef.collection('candidaturas');
-    const candidaturasPendentesSnapshot = await transaction.get(
-      todasCandidaturasRef.where('status', '==', 'pending')
-    );
 
-    // --- ETAPA 2: VALIDAÇÕES ---
-    if (!plantaoDoc.exists) { throw new Error('PLANTÃO_NAO_ENCONTRADO'); }
-    if (plantaoDoc.data().status !== 'open') { throw new Error('PLANTAO_NAO_MAIS_ABERTO'); }
+    if (!plantaoDoc.exists) {
+      const error = new Error('Plantão não encontrado.');
+      error.statusCode = 404;
+      throw error;
+    }
 
-    if (!candidaturaDoc.exists) { throw new Error('CANDIDATURA_NAO_ENCONTRADA'); }
-    if (candidaturaDoc.data().status !== 'pending') { throw new Error('CANDIDATO_JA_PROCESSADO'); }
+    const plantaoData = plantaoDoc.data();
 
-    // --- ETAPA 3: OPERAÇÕES DE ESCRITA ---
-    transaction.update(plantaoRef, {
-      status: 'filled',
-      profissionalId: profissionalId,
-      profissionalInfo: candidaturaDoc.data().profissionalInfo,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    // 1. Autorização: Verifica se a instituição que fez a requisição é a dona do plantão
+    if (plantaoData.idInstituicao !== idInstituicao) {
+       const error = new Error('Ação não autorizada.');
+       error.statusCode = 403;
+       throw error;
+    }
+
+    // 2. Validação: Verifica se o plantão ainda está aberto
+    if (plantaoData.status !== 'Aberta') {
+      const error = new Error('Este plantão já foi preenchido ou cancelado.');
+      error.statusCode = 409; // Conflict
+      throw error;
+    }
+
+    // 3. Atualiza o plantão e as candidaturas
+    const novasCandidaturas = plantaoData.candidaturas.map(cand => {
+        if (cand.idProfissional === idProfissionalAprovado) {
+            return { ...cand, status: 'aprovado' };
+        }
+        return { ...cand, status: 'rejeitado' };
     });
 
-    transaction.update(candidaturaAprovadaRef, { status: 'approved' });
-
-    candidaturasPendentesSnapshot.forEach(doc => {
-      if (doc.id !== profissionalId) {
-        transaction.update(doc.ref, { status: 'rejected' });
-      }
+    transaction.update(plantaoRef, {
+      status: 'Preenchida',
+      idProfissionalAlocado: idProfissionalAprovado,
+      candidaturas: novasCandidaturas,
     });
   });
 };
@@ -167,7 +188,7 @@ module.exports = {
   createPlantao,
   getAllPlantoes,
   createCandidatura,
-  getCandidaturas,
-  aprovarCandidato,
   getPlantaoById,
+  listarCandidatosPorPlantao,
+  aprovarCandidato,
 };

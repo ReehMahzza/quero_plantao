@@ -1,9 +1,9 @@
-// src/components/Dashboard.jsx
+// src/pages/DashboardPage.jsx
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../api';
 
-function Dashboard() {
+function DashboardPage() {
   // --- ESTADOS DO COMPONENTE ---
 
   // Estado para armazenar a lista de plantões vinda da API. Começa como um array vazio.
@@ -24,7 +24,7 @@ function Dashboard() {
     const fetchPlantoes = async () => {
       try {
         // Faz a requisição GET para o endpoint do backend.
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/plantoes`);
+        const response = await apiClient.get('/plantoes');
 
         // Se a requisição for bem-sucedida, atualiza o estado com os dados recebidos.
         setPlantoes(response.data);
@@ -90,4 +90,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default DashboardPage;

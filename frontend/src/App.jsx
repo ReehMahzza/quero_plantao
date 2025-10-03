@@ -11,19 +11,16 @@ import Sidebar from './components/Sidebar';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
-import PlantoesPage from './pages/PlantoesPage';
-import DetalhePlantaoPage from './pages/DetalhePlantaoPage';
 import SignupProfissionalPage from './pages/SignupProfissionalPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import MeuPerfilPage from './pages/MeuPerfilPage';
-import ProfileCompletionGuard from './components/ProfileCompletionGuard'; // NOVO: Importação do Guardião
+import PerfilProfissionalPage from './pages/PerfilProfissionalPage'; // <-- NOVO
+import ProfileCompletionGuard from './components/ProfileCompletionGuard';
+import GestaoPlantoesPage from './pages/GestaoPlantoesPage'; // <-- Refatorado/Novo
+import CandidaturasPage from './pages/CandidaturasPage';   // <-- Refatorado/Novo
 
 const drawerWidth = 240;
 
-/**
- * Define o layout principal da aplicação para rotas protegidas.
- * Inclui a Sidebar, a área de conteúdo principal e o Guardião de Perfil.
- */
 const MainLayout = () => (
   <Box sx={{ display: 'flex' }}>
     <Sidebar />
@@ -36,7 +33,6 @@ const MainLayout = () => (
       }}
     >
       <Toolbar />
-      {/* NOVO: O Guardião envolve o Outlet, protegendo todas as rotas filhas */}
       <ProfileCompletionGuard>
         <Outlet />
       </ProfileCompletionGuard>
@@ -44,9 +40,6 @@ const MainLayout = () => (
   </Box>
 );
 
-/**
- * Componente para proteger rotas. Redireciona para /login se não houver utilizador.
- */
 const ProtectedRoutes = () => {
   const { currentUser } = React.useContext(AuthContext);
   return currentUser ? <MainLayout /> : <Navigate to="/login" />;
@@ -68,9 +61,12 @@ function App() {
         {/* Rotas Protegidas */}
         <Route element={<ProtectedRoutes />}>
           <Route path="/" element={<DashboardPage />} />
-          <Route path="/plantoes" element={<PlantoesPage />} />
-          <Route path="/plantoes/:plantaoId" element={<DetalhePlantaoPage />} />
+          {/* Rota atualizada para a nova página de gestão */}
+          <Route path="/gestao-plantoes" element={<GestaoPlantoesPage />} />
+          {/* Rota atualizada para a nova página de candidaturas */}
+          <Route path="/plantoes/:plantaoId/candidaturas" element={<CandidaturasPage />} />
           <Route path="/meu-perfil" element={<MeuPerfilPage />} />
+          <Route path="/perfis/:profissionalId" element={<PerfilProfissionalPage />} />
         </Route>
         
         {/* Rota de Fallback */}
@@ -81,4 +77,3 @@ function App() {
 }
 
 export default App;
-

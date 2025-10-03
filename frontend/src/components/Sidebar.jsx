@@ -15,19 +15,18 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  Chip, // NOVO: Importação do Chip
+  Chip,
 } from '@mui/material';
 
 // Importações dos ícones
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import LogoutIcon from '@mui/icons-material/Logout';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // NOVO: Ícone de perfil
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const drawerWidth = 240;
 
 function Sidebar() {
-  // NOVO: Acedemos também ao userProfile do nosso contexto
   const { logout, userProfile } = useAuth();
 
   const drawerContent = (
@@ -40,7 +39,7 @@ function Sidebar() {
       <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.12)' }} />
       <List>
         <ListItem disablePadding>
-          <ListItemButton component={RouterLink} to="/">
+          <ListItemButton component={RouterLink} to="/gestao-plantoes">
             <ListItemIcon sx={{ color: 'inherit' }}>
               <DashboardIcon />
             </ListItemIcon>
@@ -48,14 +47,13 @@ function Sidebar() {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton component={RouterLink} to="/plantoes">
+          <ListItemButton component={RouterLink} to="/gestao-plantoes">
             <ListItemIcon sx={{ color: 'inherit' }}>
               <EventNoteIcon />
             </ListItemIcon>
             <ListItemText primary="Plantões" />
           </ListItemButton>
         </ListItem>
-        {/* NOVO: Link para a página de perfil */}
         <ListItem disablePadding>
           <ListItemButton component={RouterLink} to="/meu-perfil">
             <ListItemIcon sx={{ color: 'inherit' }}>
@@ -84,15 +82,14 @@ function Sidebar() {
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         {drawerContent}
-        <Box sx={{ flexGrow: 1 }} /> {/* Empurra o conteúdo para baixo */}
-        
-        {/* NOVO: Indicador de status do perfil */}
+        <Box sx={{ flexGrow: 1 }} />
+
         <Box sx={{ p: 2, textAlign: 'center' }}>
           {userProfile?.statusDoPerfil === 'pendente' && (
             <Chip label="Perfil Pendente" color="warning" size="small" />
           )}
-          {userProfile?.statusDoPerfil === 'completo' && (
-            <Chip label="Perfil Completo" color="success" size="small" />
+          {userProfile?.statusDoPerfil === 'ativo' && (
+            <Chip label="Perfil Ativo" color="success" size="small" />
           )}
         </Box>
 
@@ -112,4 +109,3 @@ function Sidebar() {
 }
 
 export default Sidebar;
-

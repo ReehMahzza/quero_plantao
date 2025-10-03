@@ -1,18 +1,18 @@
-// backend/src/routes/plantao.routes.js
-
 const express = require('express');
 const router = express.Router();
 const plantaoController = require('../controllers/plantao.controller');
+const { ensureAuthenticated } = require('../middlewares/auth.middleware');
 
-router.post('/', plantaoController.create);
-router.get('/', plantaoController.getAll); // ATUALIZADO
+// Rota para criar um novo plantão (já existente)
+router.post('/', ensureAuthenticated, plantaoController.create);
 
-// ADICIONE ESTAS DUAS LINHAS NOVAS ANTES DAS ROTAS MAIS ESPECÍFICAS
-router.get('/:id', plantaoController.getById); // <-- ROTA PARA BUSCAR UM PLANTÃO
+// Rota para listar todos os plantões (já existente)
+router.get('/', ensureAuthenticated, plantaoController.getAll);
 
-// As rotas com sub-recursos vêm depois
-router.get('/:plantaoId/candidaturas', plantaoController.listCandidaturas);
-router.post('/:plantaoId/candidatar-se', plantaoController.candidatar);
-router.post('/:plantaoId/aprovar-candidato', plantaoController.aprovar);
+// NOVA Rota para listar todos os candidatos de um plantão específico
+router.get('/:plantaoId/candidaturas', ensureAuthenticated, plantaoController.listarCandidatos);
+
+// NOVA Rota para aprovar um candidato para um plantão
+router.post('/:plantaoId/aprovar-candidato', ensureAuthenticated, plantaoController.aprovarCandidato);
 
 module.exports = router;

@@ -1,72 +1,89 @@
 // src/controllers/profissional.controller.js
-
-// Importa o serviço que contém a lógica de negócio.
 const profissionalService = require('../services/profissional.service');
 
 /**
  * Controller para a criação de um novo profissional.
- * @param {object} req - O objeto de requisição do Express.
- * @param {object} res - O objeto de resposta do Express.
  */
 const create = async (req, res) => {
   try {
-    // 1. Extrai os dados do corpo da requisição.
     const profissionalData = req.body;
-
-    // 2. Chama o serviço para executar a lógica de negócio.
     const novoProfissionalId = await profissionalService.createProfissional(profissionalData);
-
-    // 3. Envia a resposta de sucesso com o ID do novo recurso.
     res.status(201).send({ id: novoProfissionalId, message: 'Profissional criado com sucesso!' });
-
   } catch (error) {
-    // 4. Em caso de erro, loga e envia uma resposta de erro genérica.
     console.error("Erro no controller ao criar profissional: ", error);
     res.status(500).send({ message: 'Erro no servidor.' });
   }
 };
 
 /**
- * NOVO: Controller para buscar o perfil do profissional autenticado.
+ * Controller para a atualização do perfil do profissional autenticado.
  */
-const getMeuPerfil = async (req, res) => {
+const updateMeuPerfil = async (req, res) => {
   try {
-    // O UID do usuário vem do middleware 'ensureAuthenticated'
-    const userId = req.user.uid;
-    const perfil = await profissionalService.getPerfilByUserId(userId);
-
-    if (!perfil) {
-      return res.status(404).send({ message: 'Perfil não encontrado.' });
-    }
-
-    res.status(200).send(perfil);
+    const { uid } = req.user;
+    const data = req.body;
+    // ... (lógica de validação existente)
+    await profissionalService.updatePerfil(uid, data);
+    res.status(200).json({ message: 'Perfil atualizado com sucesso.' });
   } catch (error) {
-    console.error("Erro ao buscar perfil: ", error);
-    res.status(500).send({ message: 'Erro no servidor ao buscar perfil.' });
+    console.error('Erro ao atualizar perfil do profissional:', error);
+    res.status(500).json({ message: 'Erro interno no servidor ao atualizar o perfil.' });
   }
 };
 
 /**
- * NOVO: Controller para atualizar o perfil do profissional autenticado.
+ * Controller para buscar os dados do próprio perfil.
  */
-const updateMeuPerfil = async (req, res) => {
+const getMeuPerfil = async (req, res) => {
+    try {
+        const { uid } = req.user;
+        const perfil = await profissionalService.getPerfilByUserId(uid);
+        if (!perfil) {
+            return res.status(404).json({ message: 'Perfil não encontrado.' });
+        }
+        res.status(200).json(perfil);
+    } catch (error) {
+        console.error('Erro ao buscar o próprio perfil:', error);
+        res.status(500).json({ message: 'Erro interno no servidor.' });
+    }
+};
+
+/**
+ * NOVO: Controller para buscar o perfil público de um profissional pelo seu ID.
+ */
+const getProfissionalById = async (req, res) => {
   try {
-    const userId = req.user.uid;
-    const dadosPerfil = req.body;
+    const { profissionalId } = req.params;
 
-    await profissionalService.updatePerfil(userId, dadosPerfil);
+    const perfil = await profissionalService.getPerfilByUserId(profissionalId);
 
-    res.status(200).send({ message: 'Perfil atualizado com sucesso!' });
+    // Regra de Segurança: Se o perfil não for encontrado, retorna 404.
+    if (!perfil) {
+      return res.status(404).json({ message: 'Perfil do profissional não encontrado.' });
+    }
+
+    // Filtro de Dados Sensíveis: Cria um novo objeto omitindo campos privados.
+    const perfilPublico = {
+      nomeCompleto: perfil.nomeCompleto,
+      email: perfil.email,
+      coren: perfil.coren,
+      anosDeExperiencia: perfil.anosDeExperiencia,
+      especialidades: perfil.especialidades,
+      resumoProfissional: perfil.resumoProfissional,
+      // Omitimos intencionalmente: cpf, dadosBancarios, dataNascimento, sexo, telefone, endereco.
+    };
+
+    res.status(200).json(perfilPublico);
+
   } catch (error) {
-    console.error("Erro ao atualizar perfil: ", error);
-    res.status(500).send({ message: 'Erro no servidor ao atualizar perfil.' });
+    console.error('Erro ao buscar perfil do profissional por ID:', error);
+    res.status(500).json({ message: 'Erro interno no servidor.' });
   }
 };
 
-
-// Exporta as funções do controller.
 module.exports = {
   create,
-  getMeuPerfil,
   updateMeuPerfil,
+  getMeuPerfil,
+  getProfissionalById, // Exporta a nova função
 };
