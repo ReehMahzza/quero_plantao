@@ -9,6 +9,9 @@ router.post('/', ensureAuthenticated, plantaoController.create);
 // Rota para listar todos os plantões (já existente)
 router.get('/', ensureAuthenticated, plantaoController.getAll);
 
+// NOVA Rota para buscar um plantão específico pelo ID
+router.get('/:plantaoId', ensureAuthenticated, plantaoController.findSingle);
+
 // NOVA Rota para listar todos os candidatos de um plantão específico
 router.get('/:plantaoId/candidaturas', ensureAuthenticated, plantaoController.listarCandidatos);
 

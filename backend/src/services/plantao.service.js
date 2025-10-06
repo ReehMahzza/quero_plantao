@@ -175,7 +175,7 @@ const aprovarCandidato = async ({ plantaoId, idProfissionalAprovado, idInstituic
   });
 };
 
-const getPlantaoById = async (plantaoId) => {
+const findPlantaoById = async (plantaoId) => {
   const docRef = db.collection('plantoes').doc(plantaoId);
   const doc = await docRef.get();
   if (!doc.exists) {
@@ -188,7 +188,7 @@ module.exports = {
   createPlantao,
   getAllPlantoes,
   createCandidatura,
-  getPlantaoById,
+  findPlantaoById,
   listarCandidatosPorPlantao,
   aprovarCandidato,
 };

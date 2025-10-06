@@ -1,5 +1,5 @@
 // src/App.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
 
@@ -16,29 +16,45 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import MeuPerfilPage from './pages/MeuPerfilPage';
 import PerfilProfissionalPage from './pages/PerfilProfissionalPage'; // <-- NOVO
 import ProfileCompletionGuard from './components/ProfileCompletionGuard';
-import GestaoPlantoesPage from './pages/GestaoPlantoesPage'; // <-- Refatorado/Novo
+import GestaoPlantoesContainer from './pages/GestaoPlantoesContainer'; // <-- Refatorado/Novo
 import CandidaturasPage from './pages/CandidaturasPage';   // <-- Refatorado/Novo
 
 const drawerWidth = 240;
 
-const MainLayout = () => (
-  <Box sx={{ display: 'flex' }}>
-    <Sidebar />
-    <Box
-      component="main"
-      sx={{
-        flexGrow: 1,
-        p: 3,
-        width: `calc(100% - ${drawerWidth}px)`,
-      }}
-    >
-      <Toolbar />
-      <ProfileCompletionGuard>
-        <Outlet />
-      </ProfileCompletionGuard>
+const MainLayout = () => {
+  const [open, setOpen] = useState(true);
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <Sidebar open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} />
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: open ? `calc(100% - ${drawerWidth}px)` : `calc(100% - 65px)`,
+          transition: (theme) => theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
+        }}
+      >
+        <Toolbar />
+        <ProfileCompletionGuard>
+          <Outlet />
+        </ProfileCompletionGuard>
+      </Box>
     </Box>
-  </Box>
-);
+  );
+};
 
 const ProtectedRoutes = () => {
   const { currentUser } = React.useContext(AuthContext);
@@ -62,7 +78,7 @@ function App() {
         <Route element={<ProtectedRoutes />}>
           <Route path="/" element={<DashboardPage />} />
           {/* Rota atualizada para a nova página de gestão */}
-          <Route path="/gestao-plantoes" element={<GestaoPlantoesPage />} />
+          <Route path="/gestao-plantoes" element={<GestaoPlantoesContainer />} />
           {/* Rota atualizada para a nova página de candidaturas */}
           <Route path="/plantoes/:plantaoId/candidaturas" element={<CandidaturasPage />} />
           <Route path="/meu-perfil" element={<MeuPerfilPage />} />

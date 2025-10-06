@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protótipo Final - Matriz de Escala - Conecta Care</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F4F7F9;
+            color: #4A5568;
+        }
+
+        /* Cores da marca Conecta Care */
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#1A2536',
+                        'secondary': '#00C49A',
+                        'light-gray': '#F4F7F9',
+                        'medium-gray': '#A0AEC0',
+                        'dark-gray': '#4A5568',
+                        'brand-blue': '#3B82F6',
+                        'brand-green': '#10B981',
+                        'brand-red': '#EF4444',
+                        'brand-yellow': '#F59E0B',
+                    }
+                }
+            }
+        }
+
+        .panel { transition: transform 0.3s ease-in-out; }
+        .modal-backdrop { background-color: rgba(0,0,0,0.5); transition: opacity 0.3s ease-in-out;}
+
+        /* Custom scrollbar for timeline */
+        .timeline-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
+        .timeline-scroll::-webkit-scrollbar-track { background: #e2e8f0; }
+        .timeline-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        .timeline-scroll::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
+        .sticky-col { position: sticky; left: 0; z-index: 10; }
+        .sticky-header { position: sticky; top: 0; z-index: 20; }
+    </style>
+</head>
+<body class="overflow-hidden h-screen">
+
+    <div class="flex h-full bg-light-gray">
+        <!-- Sidebar principal -->
+        <aside class="w-20 bg-primary flex flex-col items-center py-4 space-y-6 flex-shrink-0">
+            <!-- Logo ou Ícone Principal -->
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="flex-1 flex flex-col">
+            <!-- Cabeçalho com Indicadores -->
+            <header class="p-4 border-b border-gray-200 bg-white flex-shrink-0">
+                 <div class="flex justify-between items-center mb-4">
+                    <div>
+                         <h1 class="text-xl font-bold text-primary">Gestão de Escala</h1>
+                         <p class="text-sm text-medium-gray">Home Care - Unidade Campinas</p>
+                    </div>
+                     <div class="flex items-center gap-2">
+                        <button class="p-2 rounded-md hover:bg-gray-100 text-dark-gray"><i data-lucide="chevron-left"></i></button>
+                        <span class="font-semibold text-base">Outubro, 2025</span>
+                        <button class="p-2 rounded-md hover:bg-gray-100 text-dark-gray"><i data-lucide="chevron-right"></i></button>
+                    </div>
+                 </div>
+                 <div class="grid grid-cols-4 gap-4">
+                     <!-- Indicadores / Filtros -->
+                     <div class="p-3 rounded-lg bg-gray-100 border border-gray-200 cursor-pointer">
+                         <p class="text-sm text-medium-gray">Total de Pacientes</p>
+                         <p class="text-2xl font-bold text-primary">124</p>
+                     </div>
+                     <div class="p-3 rounded-lg bg-red-50 border border-red-200 cursor-pointer">
+                         <p class="text-sm text-red-600">Vagas em Aberto</p>
+                         <p class="text-2xl font-bold text-brand-red">17</p>
+                     </div>
+                     <div class="p-3 rounded-lg bg-gray-100 border border-gray-200 cursor-pointer">
+                         <p class="text-sm text-medium-gray">Plantões Ocupados</p>
+                         <p class="text-2xl font-bold text-primary">352</p>
+                     </div>
+                      <div class="p-3 rounded-lg bg-gray-100 border border-gray-200 cursor-pointer">
+                         <p class="text-sm text-medium-gray">Profissionais Fixos</p>
+                         <p class="text-2xl font-bold text-primary">48</p>
+                     </div>
+                 </div>
+            </header>
+            
+            <!-- Matriz de Escala -->
+            <div class="flex-1 overflow-auto timeline-scroll">
+                <div class="relative inline-block min-w-full align-middle">
+                    <table class="min-w-full border-separate" style="border-spacing: 0;">
+                        <thead class="bg-light-gray">
+                            <tr>
+                                <th class="sticky-col sticky-header bg-light-gray p-3 text-left text-sm font-semibold text-primary w-64 border-b border-r">Paciente</th>
+                                <th class="sticky-header p-3 text-center text-sm font-semibold text-primary min-w-[180px] border-b">Segunda, 06</th>
+                                <th class="sticky-header p-3 text-center text-sm font-semibold text-primary min-w-[180px] border-b">Terça, 07</th>
+                                <th class="sticky-header p-3 text-center text-sm font-semibold text-primary min-w-[180px] border-b">Quarta, 08</th>
+                                <th class="sticky-header p-3 text-center text-sm font-semibold text-primary min-w-[180px] border-b">Quinta, 09</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white">
+                            <!-- Linha do Paciente 1 -->
+                            <tr>
+                                <td class="sticky-col bg-white p-3 text-sm font-medium text-dark-gray w-64 border-b border-r">
+                                    <a href="#" class="hover:underline patient-link">Sra. Maria Lopes</a>
+                                </td>
+                                <!-- Dia 1 -->
+                                <td class="p-2 border-b">
+                                    <div class="space-y-1">
+                                        <!-- Card Diurno (Preenchido) -->
+                                        <div class="p-2 rounded border border-gray-200 bg-gray-50 text-xs">
+                                            <div class="flex items-center gap-1">
+                                                <div class="w-4 h-4 rounded-full bg-secondary text-white flex items-center justify-center text-[10px] font-bold">CN</div>
+                                                <span class="font-medium">Carla Nogueira</span>
+                                            </div>
+                                        </div>
+                                        <!-- Card Noturno (Vaga em Aberto) -->
+                                        <div class="p-2 rounded border-2 border-dashed border-brand-yellow bg-yellow-50 text-xs text-center cursor-pointer hover:bg-yellow-100 open-shift">
+                                            <span class="font-semibold text-yellow-800">+ Preencher Noturno</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <!-- Dia 2 -->
+                                <td class="p-2 border-b">
+                                     <div class="space-y-1">
+                                        <!-- Card Diurno (Fixo) -->
+                                        <div class="p-2 rounded border border-gray-200 bg-blue-50 text-xs">
+                                            <div class="flex items-center gap-1">
+                                                <i data-lucide="anchor" class="w-3 h-3 text-blue-600"></i>
+                                                <div class="w-4 h-4 rounded-full bg-secondary text-white flex items-center justify-center text-[10px] font-bold">FB</div>
+                                                <span class="font-medium">Fábio Bastos</span>
+                                            </div>
+                                        </div>
+                                        <!-- Card Noturno (Fixo) -->
+                                         <div class="p-2 rounded border border-gray-200 bg-blue-50 text-xs">
+                                            <div class="flex items-center gap-1">
+                                                <i data-lucide="anchor" class="w-3 h-3 text-blue-600"></i>
+                                                <div class="w-4 h-4 rounded-full bg-secondary text-white flex items-center justify-center text-[10px] font-bold">DL</div>
+                                                <span class="font-medium">Diogo Lima</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-2 border-b"></td>
+                                <td class="p-2 border-b"></td>
+                            </tr>
+                             <!-- Linha do Paciente 2 -->
+                            <tr>
+                                <td class="sticky-col bg-white p-3 text-sm font-medium text-dark-gray w-64 border-b border-r">
+                                     <a href="#" class="hover:underline patient-link">Sr. Jorge Mendes</a>
+                                </td>
+                                <td class="p-2 border-b"></td>
+                                <td class="p-2 border-b"></td>
+                                <!-- Dia 3 -->
+                                <td class="p-2 border-b">
+                                    <div class="space-y-1">
+                                        <!-- Card Diurno (Vaga Urgente) -->
+                                         <div class="p-2 rounded border-2 border-dashed border-brand-red bg-red-50 text-xs text-center cursor-pointer hover:bg-red-100 open-shift">
+                                            <span class="font-semibold text-red-800">! URGENTE Diurno</span>
+                                        </div>
+                                        <!-- Card Noturno (Preenchido) -->
+                                        <div class="p-2 rounded border border-gray-200 bg-gray-50 text-xs">
+                                            <div class="flex items-center gap-1">
+                                                <div class="w-4 h-4 rounded-full bg-secondary text-white flex items-center justify-center text-[10px] font-bold">DM</div>
+                                                <span class="font-medium">Diana Magalhães</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-2 border-b"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Painel Lateral de Candidaturas -->
+    <div id="side-panel" class="panel fixed top-0 right-0 h-full w-96 bg-white shadow-2xl z-50 transform translate-x-full">
+        <div class="p-4 border-b flex justify-between items-center">
+            <h2 class="text-xl font-bold text-primary">Preencher Vaga</h2>
+            <button id="close-panel" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="x"></i></button>
+        </div>
+        <div class="p-4">
+            <h3 class="font-semibold">Sra. Maria Lopes - Noturno</h3>
+            <p class="text-sm text-medium-gray">Segunda, 06 de Outubro, 19:00 - 07:00</p>
+            <hr class="my-4">
+            <h4 class="font-semibold mb-2">Candidatos Online (2)</h4>
+            <!-- Lista de candidatos -->
+        </div>
+    </div>
+    
+    <!-- Modal de Ficha do Paciente -->
+    <div id="patient-modal" class="modal-backdrop fixed inset-0 z-40 flex items-center justify-center opacity-0 pointer-events-none">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold text-primary">Ficha do Paciente</h2>
+                <button id="close-modal" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="x"></i></button>
+            </div>
+            <p class="mt-4">Detalhes e histórico do paciente aqui...</p>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidePanel = document.getElementById('side-panel');
+            const patientModal = document.getElementById('patient-modal');
+            const openShiftButtons = document.querySelectorAll('.open-shift');
+            const patientLinks = document.querySelectorAll('.patient-link');
+            const closePanelBtn = document.getElementById('close-panel');
+            const closeModalBtn = document.getElementById('close-modal');
+
+            const openPanel = () => sidePanel.classList.remove('translate-x-full');
+            const closePanel = () => sidePanel.classList.add('translate-x-full');
+            const openModal = () => patientModal.classList.remove('opacity-0', 'pointer-events-none');
+            const closeModal = () => patientModal.classList.add('opacity-0', 'pointer-events-none');
+
+            openShiftButtons.forEach(btn => btn.addEventListener('click', openPanel));
+            patientLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openModal();
+                });
+            });
+            closePanelBtn.addEventListener('click', closePanel);
+            closeModalBtn.addEventListener('click', closeModal);
+            patientModal.addEventListener('click', (e) => {
+                if (e.target === patientModal) closeModal();
+            });
+        });
+    </script>
+</body>
+</html>

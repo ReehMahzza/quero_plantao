@@ -13,15 +13,16 @@ const getAll = async (req, res) => {
   }
 };
 
-const getById = async (req, res) => {
+const findSingle = async (req, res) => {
   try {
-    const plantao = await plantaoService.getPlantaoById(req.params.id);
+    const { plantaoId } = req.params;
+    const plantao = await plantaoService.findPlantaoById(plantaoId);
     if (!plantao) {
       return res.status(404).send({ message: 'Plantão não encontrado.' });
     }
     res.status(200).send(plantao);
   } catch (error) {
-    console.error("Erro ao buscar plantão por ID:", error);
+    console.error('Erro ao buscar plantão por ID:', error);
     res.status(500).send({ message: 'Erro no servidor.' });
   }
 };
@@ -105,7 +106,7 @@ module.exports = {
   getAll,
   create,
   candidatar,
-  getById,
+  findSingle,
   listarCandidatos,
   aprovarCandidato,
 };
