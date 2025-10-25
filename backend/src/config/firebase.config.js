@@ -2,15 +2,30 @@
 
 const admin = require('firebase-admin');
 
-// Inicializa a conexão com o Firebase.
-// Esta configuração só precisa ser feita uma vez.
-// O SDK irá automaticamente usar as Application Default Credentials (ADC)
-// que você configurou com 'gcloud auth application-default login'.
+const hasServiceAccount =
+  process.env.FIREBASE_PROJECT_ID &&
+  process.env.FIREBASE_CLIENT_EMAIL &&
+  process.env.FIREBASE_PRIVATE_KEY;
+
 if (!admin.apps.length) {
-  admin.initializeApp();
+  if (hasServiceAccount) {
+    const rawPrivateKey = process.env.FIREBASE_PRIVATE_KEY || '';
+    const privateKey = rawPrivateKey
+      .replace(/\\n/g, '\n')        // converte sequências literais \n
+      .replace(/^"|"$/g, '');       // remove aspas extras no início/fim, caso existam
+
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey
+      })
+    });
+  } else {
+    admin.initializeApp();
+  }
 }
 
-// Exporta as instâncias do admin e do db para serem usadas em outros lugares da aplicação.
 const db = admin.firestore();
 
 module.exports = {

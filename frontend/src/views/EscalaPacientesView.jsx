@@ -74,25 +74,25 @@ const PageHeader = ({ onOpenVagaModal }) => (
         </Box>
       </Box>
       <Grid container spacing={2}>
-          <Grid item xs={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'grey.100', border: 1, borderColor: 'grey.200'}}>
                   <Typography variant="body2" color="text.secondary">Total de Pacientes</Typography>
                   <Typography variant="h5" sx={{ fontWeight: 'bold', color: 'primary.main' }}>124</Typography>
               </Paper>
           </Grid>
-          <Grid item xs={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'error.light', border: 1, borderColor: 'error.main'}}>
                   <Typography variant="body2" sx={{color: 'error.dark'}}>Vagas em Aberto</Typography>
                   <Typography variant="h5" sx={{ fontWeight: 'bold', color: 'error.main' }}>17</Typography>
               </Paper>
           </Grid>
-          <Grid item xs={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'grey.100', border: 1, borderColor: 'grey.200'}}>
                   <Typography variant="body2" color="text.secondary">Plantões Ocupados</Typography>
                   <Typography variant="h5" sx={{ fontWeight: 'bold', color: 'primary.main' }}>352</Typography>
               </Paper>
           </Grid>
-          <Grid item xs={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Button variant="contained" color="primary" onClick={() => onOpenVagaModal({})}>+ Publicar Nova Vaga</Button>
           </Grid>
       </Grid>

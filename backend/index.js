@@ -1,6 +1,8 @@
 // index.js (Ponto de entrada do Backend)
 
 // --- 1. Importação das Ferramentas ---
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const mainRouter = require('./src/routes');
